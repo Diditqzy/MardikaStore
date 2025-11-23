@@ -2,6 +2,16 @@
 
     <a href="{{ route('seller.products.create') }}"
        class="bg-green-600 text-white px-4 py-2 rounded">Add Product</a>
+       @if ($errors->any())
+    <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+        <ul class="list-disc pl-4">
+            @foreach ($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 
     <table class="w-full bg-white mt-5 shadow">
         <tr>
@@ -20,7 +30,7 @@
                 @endif
             </td>
             <td class="p-3">{{ $p->name }}</td>
-            <td class="p-3">{{ $p->price }}</td>
+            <td class="p-3">Rp {{ number_format($p->price, 0, ',', '.') }}</td>
             <td class="p-3">{{ $p->stock }}</td>
             <td class="p-3">
                 <a href="{{ route('seller.products.edit', $p->id) }}" class="text-blue-600">Edit</a>

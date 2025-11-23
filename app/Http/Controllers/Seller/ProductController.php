@@ -12,7 +12,11 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Auth::user()->store->products ?? [];
+        $store = Auth::user()->store;
+
+        // Jika seller belum punya toko, kembalikan array kosong
+        $products = $store ? $store->products : [];
+
         return view('seller.products.index', compact('products'));
     }
 
@@ -27,13 +31,16 @@ class ProductController extends Controller
         $request->validate([
             'category_id' => 'required',
             'name'        => 'required',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
+            'price'       => 'required|numeric|min:1',
+            'stock'       => 'required|integer|min:1',
             'description' => 'nullable',
             'image'       => 'nullable|image'
         ]);
 
         $store = Auth::user()->store;
+
+        // Sanitasi harga (hapus titik, koma, dan huruf)
+        $cleanPrice = preg_replace('/[^0-9]/', '', $request->price);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -45,12 +52,13 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'name'        => $request->name,
             'description' => $request->description,
-            'price'       => $request->price,
+            'price'       => $cleanPrice,
             'stock'       => $request->stock,
             'image'       => $imagePath
         ]);
 
-        return redirect()->route('seller.products.index')->with('success', 'Product created.');
+        return redirect()->route('seller.products.index')
+            ->with('success', 'Product created.');
     }
 
     public function edit(Product $product)
@@ -64,11 +72,14 @@ class ProductController extends Controller
         $request->validate([
             'category_id' => 'required',
             'name'        => 'required',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
+            'price'       => 'required|numeric|min:1',
+            'stock'       => 'required|integer|min:1',
             'description' => 'nullable',
-            'image'       => 'nullable|image'
+            'image' => 'nullable|mimes:jpg,jpeg,png,svg|max:2048',
         ]);
+
+        // Sanitasi harga
+        $cleanPrice = preg_replace('/[^0-9]/', '', $request->price);
 
         if ($request->hasFile('image')) {
             $product->image = $request->file('image')->store('product_images', 'public');
@@ -78,11 +89,12 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'name'        => $request->name,
             'description' => $request->description,
-            'price'       => $request->price,
+            'price'       => $cleanPrice,
             'stock'       => $request->stock,
         ]);
 
-        return redirect()->route('seller.products.index')->with('success', 'Product updated.');
+        return redirect()->route('seller.products.index')
+            ->with('success', 'Product updated.');
     }
 
     public function destroy(Product $product)

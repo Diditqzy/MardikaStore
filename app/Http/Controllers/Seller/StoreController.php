@@ -21,7 +21,7 @@ class StoreController extends Controller
         $request->validate([
             'name' => 'required',
             'description' => 'nullable',
-            'image' => 'nullable|image',
+            'image' => 'nullable|mimes:jpg,jpeg,png,svg|max:2048',
         ]);
 
         $store = Auth::user()->store;
