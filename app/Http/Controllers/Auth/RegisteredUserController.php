@@ -50,8 +50,29 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        
+
+        // return redirect($this->redirectByRole());
+        return redirect()->route('login')
+        ->with('success', 'Registration successful! Please login.');
+    }
+
+    private function redirectByRole()
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
+            return route('admin.dashboard');
+        }
+
+        if ($user->role === 'seller') {
+            return $user->status === 'approved'
+                ? route('seller.dashboard')
+                : route('seller.pending');
+        }
+
+        return route('buyer.dashboard');
     }
 }
