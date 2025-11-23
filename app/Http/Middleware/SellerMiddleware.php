@@ -20,10 +20,17 @@ class SellerMiddleware
             return redirect('/');
         }
 
-        if (Auth::user()->status !== 'approved') {
+        // Jika seller pending
+        if (Auth::user()->status === 'pending') {
             return redirect('/seller/pending');
         }
 
+        // Jika seller rejected
+        if (Auth::user()->status === 'rejected') {
+            return redirect('/seller/rejected');
+        }
+
+        // Seller approved => boleh masuk
         return $next($request);
     }
 }

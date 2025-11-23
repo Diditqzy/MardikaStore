@@ -61,5 +61,55 @@ Route::middleware(['auth', 'admin'])->prefix('admin/categories')->name('admin.ca
     Route::delete('/{category}/delete', [App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('destroy');
 });
 
+Route::middleware(['auth', 'seller'])->prefix('seller')->name('seller.')->group(function () {
+    Route::get('/store', [App\Http\Controllers\Seller\StoreController::class, 'index'])->name('store');
+    Route::post('/store/update', [App\Http\Controllers\Seller\StoreController::class, 'update'])->name('store.update');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    Route::get('/users', [App\Http\Controllers\Admin\UserManagementController::class, 'index'])
+        ->name('users.index');
+
+    Route::get('/sellers/pending', [App\Http\Controllers\Admin\UserManagementController::class, 'pendingSellers'])
+        ->name('sellers.pending');
+
+    Route::post('/sellers/{id}/approve', [App\Http\Controllers\Admin\UserManagementController::class, 'approve'])
+        ->name('sellers.approve');
+
+    Route::post('/sellers/{id}/reject', [App\Http\Controllers\Admin\UserManagementController::class, 'reject'])
+        ->name('sellers.reject');
+});
+
+Route::get('/seller/rejected', function () {
+    return view('seller.rejected');
+})->middleware('auth')->name('seller.rejected');
+
+Route::delete('/seller/delete-account', function () {
+    $user = auth()->user();
+    $user->delete();
+
+    auth()->logout();
+
+    return redirect('/')->with('success', 'Account deleted');
+})->middleware('auth')->name('seller.delete.account');
+
+
+Route::middleware(['auth', 'seller'])->prefix('seller')->name('seller.')->group(function () {
+
+    // Store
+    Route::get('/store', [App\Http\Controllers\Seller\StoreController::class, 'index'])->name('store');
+    Route::post('/store/update', [App\Http\Controllers\Seller\StoreController::class, 'update'])->name('store.update');
+
+    // Products
+    Route::get('/products', [App\Http\Controllers\Seller\ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [App\Http\Controllers\Seller\ProductController::class, 'create'])->name('products.create');
+    Route::post('/products/store', [App\Http\Controllers\Seller\ProductController::class, 'store'])->name('products.store');
+
+    Route::get('/products/{product}/edit', [App\Http\Controllers\Seller\ProductController::class, 'edit'])->name('products.edit');
+    Route::post('/products/{product}/update', [App\Http\Controllers\Seller\ProductController::class, 'update'])->name('products.update');
+
+    Route::delete('/products/{product}/delete', [App\Http\Controllers\Seller\ProductController::class, 'destroy'])->name('products.delete');
+});
 
 require __DIR__.'/auth.php';

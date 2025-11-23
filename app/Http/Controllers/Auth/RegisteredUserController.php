@@ -68,9 +68,18 @@ class RegisteredUserController extends Controller
         }
 
         if ($user->role === 'seller') {
-            return $user->status === 'approved'
-                ? route('seller.dashboard')
-                : route('seller.pending');
+
+            if ($user->status === 'pending') {
+                return route('seller.pending');
+            }
+
+            if ($user->status === 'rejected') {
+                return route('seller.rejected');
+            }
+
+            if ($user->status === 'approved') {
+                return route('seller.dashboard');
+            }
         }
 
         return route('buyer.dashboard');
