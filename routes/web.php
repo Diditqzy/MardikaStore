@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicProductController;
 use App\Http\Controllers\Buyer\BuyerDashboardController;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\CartController;
 
 Route::get('/force-logout', function () {
     Auth::logout();
@@ -118,6 +119,15 @@ Route::middleware(['auth', 'seller'])->prefix('seller')->name('seller.')->group(
 
 Route::get('/', [PublicProductController::class, 'index'])->name('catalog');
 Route::get('/product/{product}', [PublicProductController::class, 'show'])->name('product.detail');
+
+Route::middleware(['auth','buyer'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'store'])->name('cart.store');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::patch('/cart/item/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/item/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
+});
+
 
 
 require __DIR__.'/auth.php';

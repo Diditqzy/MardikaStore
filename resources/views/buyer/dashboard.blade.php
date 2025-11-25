@@ -5,6 +5,12 @@
         <h1 class="text-2xl font-bold mb-4">Selamat datang, {{ auth()->user()->name }}</h1>
 
         <hr class="my-6">
+        <div class="flex justify-end mb-4">
+            <a href="{{ route('cart.index') }}" class="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.6 8H20m-13-8V6h13" /></svg>
+                Keranjang
+            </a>
+        </div>
 
         <h2 class="text-xl font-semibold mb-6">Rekomendasi Produk</h2>
 
