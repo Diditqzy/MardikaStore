@@ -20,12 +20,13 @@
         <label class="block">Description</label>
         <textarea name="description" class="w-full p-2 border rounded mb-4">{{ $store->description ?? '' }}</textarea>
 
-        <label class="block font-semibold mb-1">Store Image</label>
-        <input type="file" name="image" class="mb-1">
-
-        <p class="text-sm text-gray-500 mb-4">
-            Allowed: JPG, JPEG, PNG, SVG — Max 2MB
-        </p>
+        <label class="block">Store Image (jpg, jpeg, png)</label>
+        <input 
+            type="file" 
+            name="image"
+            accept=".jpg,.jpeg,.png"
+            class="mb-4"
+        >
 
         @if ($store && $store->image)
             <img src="{{ asset('storage/'.$store->image) }}" class="h-32 mb-4 rounded">

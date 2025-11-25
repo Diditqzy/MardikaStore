@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\PublicProductController;
+use App\Http\Controllers\Buyer\BuyerDashboardController;
 use Illuminate\Support\Facades\Session;
 
 Route::get('/force-logout', function () {
@@ -44,9 +45,12 @@ Route::middleware(['auth', 'seller'])->get('/seller/dashboard', function () {
 })->name('seller.dashboard');
 
 // BUYER DASHBOARD
-Route::middleware(['auth', 'buyer'])->get('/buyer/dashboard', function () {
-    return view('buyer.dashboard');
-})->name('buyer.dashboard');
+// Route::middleware(['auth', 'buyer'])->get('/buyer/dashboard', function () {
+//     return view('buyer.dashboard');
+// })->name('buyer.dashboard');
+Route::middleware(['auth','buyer'])
+    ->get('/buyer/dashboard', [BuyerDashboardController::class, 'index'])
+    ->name('buyer.dashboard');
 
 Route::middleware(['auth', 'admin'])->prefix('admin/categories')->name('admin.categories.')->group(function () {
     
@@ -111,5 +115,9 @@ Route::middleware(['auth', 'seller'])->prefix('seller')->name('seller.')->group(
 
     Route::delete('/products/{product}/delete', [App\Http\Controllers\Seller\ProductController::class, 'destroy'])->name('products.delete');
 });
+
+Route::get('/', [PublicProductController::class, 'index'])->name('catalog');
+Route::get('/product/{product}', [PublicProductController::class, 'show'])->name('product.detail');
+
 
 require __DIR__.'/auth.php';

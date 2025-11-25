@@ -59,12 +59,13 @@
                 class="w-full p-2 border rounded mb-4"></textarea>
 
             {{-- IMAGE --}}
-            <label class="block font-semibold mb-1">Product Image</label>
-            <input type="file" name="image" class="mb-1">
-
-            <p class="text-sm text-gray-500 mb-4">
-                Allowed: JPG, JPEG, PNG, SVG — Max 2MB
-            </p>
+            <label class="block mb-1">Product Image (jpg, jpeg, png)</label>
+            <input 
+                type="file" 
+                name="image" 
+                accept=".jpg,.jpeg,.png"
+                class="w-full p-2 border rounded mb-4"
+            >
 
             <button class="bg-green-600 text-white px-4 py-2 rounded w-full">
                 Save Product

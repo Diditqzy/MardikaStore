@@ -31,10 +31,10 @@ class ProductController extends Controller
         $request->validate([
             'category_id' => 'required',
             'name'        => 'required',
-            'price'       => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:1|max:999999999999',
             'stock'       => 'required|integer|min:1',
             'description' => 'nullable',
-            'image'       => 'nullable|image'
+            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $store = Auth::user()->store;
@@ -75,7 +75,7 @@ class ProductController extends Controller
             'price'       => 'required|numeric|min:1',
             'stock'       => 'required|integer|min:1',
             'description' => 'nullable',
-            'image' => 'nullable|mimes:jpg,jpeg,png,svg|max:2048',
+            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         // Sanitasi harga
@@ -92,6 +92,7 @@ class ProductController extends Controller
             'price'       => $cleanPrice,
             'stock'       => $request->stock,
         ]);
+        
 
         return redirect()->route('seller.products.index')
             ->with('success', 'Product updated.');
