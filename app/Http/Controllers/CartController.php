@@ -64,7 +64,7 @@ class CartController extends Controller
                 ]);
             }
 
-            return redirect()->route('cart.index')->with('success', 'Produk ditambahkan ke keranjang.');
+            return back()->with('success', 'Produk telah ditambahkan ke keranjang.');
         });
     }
 
@@ -95,7 +95,7 @@ class CartController extends Controller
         $cartItem->quantity = $request->quantity;
         $cartItem->save();
 
-        return redirect()->route('cart.index')->with('success', 'Jumlah berhasil diperbarui.');
+        return back()->with('success', 'Produk telah ditambahkan ke keranjang.');
     }
 
     // remove item
@@ -113,6 +113,27 @@ class CartController extends Controller
     {
         $cart = Cart::where('user_id', Auth::id())->firstOrCreate();
         $cart->items()->delete();
-        return redirect()->route('cart.index')->with('success', 'Keranjang dikosongkan.');
+        return back()->with('success', 'Produk telah ditambahkan ke keranjang.');
+    }
+    public function ajaxUpdate(Request $request, CartItem $cartItem)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $cart = Cart::where('user_id', Auth::id())->firstOrFail();
+        if ($cartItem->cart_id !== $cart->id) return response()->json(['error' => 'Unauthorized'], 403);
+
+        if ($request->quantity > $cartItem->product->stock) {
+            return response()->json(['error' => 'Stok tidak mencukupi'], 422);
+        }
+
+        $cartItem->quantity = $request->quantity;
+        $cartItem->save();
+
+        return response()->json([
+            'success' => true,
+            'qty' => $cartItem->quantity
+        ]);
     }
 }

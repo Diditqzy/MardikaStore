@@ -1,129 +1,199 @@
 <x-dashboard-layout title="Keranjang Belanja">
 
-    <div class="max-w-4xl mx-auto p-6">
+<div class="max-w-4xl mx-auto p-6">
 
-        <h1 class="text-2xl font-bold mb-4">Keranjang Belanja</h1>
+    <h1 class="text-2xl font-bold mb-4">Keranjang Belanja</h1>
 
-        @if(session('success'))
-            <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
-        @endif
+    @if(session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
+    @endif
 
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
-                <ul class="list-disc pl-4">
-                    @foreach ($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    @if ($cart->items->isEmpty())
+        <p class="text-gray-600">Keranjang Anda kosong.</p>
+    @else
 
-        @if ($cart->items->isEmpty())
-            <p class="text-gray-600">Keranjang Anda kosong.</p>
-        @else
-            <div class="space-y-4">
+    <!-- ============================= -->
+    <!-- FORM CHECKOUT (POST SAJA)    -->
+    <!-- ============================= -->
+    <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
+        @csrf
 
-                @foreach ($cart->items as $item)
-                    <div class="flex gap-4 items-center bg-white p-4 rounded shadow">
-                        <div class="w-24 h-24 bg-gray-100 flex items-center justify-center overflow-hidden">
-                            <img src="{{ $item->product->image ? asset('storage/'.$item->product->image) : 'https://via.placeholder.com/150' }}"
-                                 class="object-contain h-full">
-                        </div>
+        <div class="space-y-4">
 
-                        <div class="flex-1">
-                            <h3 class="font-semibold">{{ $item->product->name }}</h3>
-                            <p class="text-sm text-gray-600">Toko: {{ $item->product->store->name ?? '-' }}</p>
-                            <p class="text-blue-600 font-bold">Rp {{ number_format($item->price,0,',','.') }}</p>
+            @foreach ($cart->items as $item)
+                <div class="flex gap-4 items-center bg-white p-4 rounded shadow relative">
 
-                            <form action="{{ route('cart.update', $item->id) }}" 
-                                method="POST" 
-                                class="flex items-center gap-2">
+                    <!-- CHECKBOX -->
+                    <input type="checkbox"
+                           name="selected_items[]"
+                           value="{{ $item->id }}"
+                           class="selected-item"
+                           onchange="recalcTotal()">
 
-                                @csrf
-                                @method('PATCH')
-
-                                <!-- MINUS BUTTON -->
-                                <button type="button"
-                                    onclick="cartMinus({{ $item->id }})"
-                                    class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-xl font-bold">
-                                    -
-                                </button>
-
-                                <!-- INPUT -->
-                                <input 
-                                    type="text"
-                                    id="qtyInput_{{ $item->id }}"
-                                    name="quantity"
-                                    value="{{ $item->quantity }}"
-                                    class="w-14 p-1 border rounded text-center"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                >
-
-                                <!-- PLUS BUTTON -->
-                                <button type="button"
-                                    onclick="cartPlus({{ $item->id }}, {{ $item->product->stock }})"
-                                    class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-xl font-bold">
-                                    +
-                                </button>
-
-                                <!-- UPDATE -->
-                                <button type="submit"
-                                    class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                                    Update
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="text-right">
-                            <form action="{{ route('cart.destroy', $item->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button class="text-red-600">Hapus</button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-
-                <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-                    <div>
-                        <form action="{{ route('cart.clear') }}" method="POST">
-                            @csrf
-                            <button class="text-sm text-red-600">Kosongkan Keranjang</button>
-                        </form>
+                    <!-- IMAGE -->
+                    <div class="w-20 h-20 overflow-hidden flex justify-center items-center">
+                        <img src="{{ asset('storage/'.$item->product->image) }}" class="object-contain h-full">
                     </div>
 
-                    <div class="text-right">
-                        <p class="text-gray-600">Subtotal:</p>
-                        <p class="text-xl font-bold">Rp {{ number_format($cart->total(),0,',','.') }}</p>
-                        <p class="text-sm text-gray-500">Belum termasuk ongkir</p>
+                    <!-- PRODUCT INFO -->
+                    <div class="flex-1">
+                        <h3 class="font-semibold">{{ $item->product->name }}</h3>
+
+                        <p class="text-blue-600 font-bold priceText"
+                           data-price="{{ $item->price }}">
+                            Rp {{ number_format($item->price,0,',','.') }}
+                        </p>
+
+                        <!-- QTY AJAX -->
+                        <div class="flex items-center gap-2 mt-2">
+
+                            <button type="button"
+                                    onclick="qtyMinus({{ $item->id }})"
+                                    class="w-7 h-7 bg-gray-200 rounded">
+                                -
+                            </button>
+
+                            <input type="text"
+                                   id="qty_{{ $item->id }}"
+                                   class="qtyInput w-12 text-center border rounded"
+                                   value="{{ $item->quantity }}"
+                                   data-id="{{ $item->id }}"
+                                   data-stock="{{ $item->product->stock }}"
+                                   oninput="qtyManual({{ $item->id }})">
+
+                            <button type="button"
+                                    onclick="qtyPlus({{ $item->id }}, {{ $item->product->stock }})"
+                                    class="w-7 h-7 bg-gray-200 rounded">
+                                +
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- DELETE BUTTON (OUTSIDE FORM CHECKOUT!!!) -->
+                    <button type="button"
+                            class="absolute top-2 right-2 text-red-600"
+                            onclick="deleteItem({{ $item->id }})">
+                        Hapus
+                    </button>
+
                 </div>
+            @endforeach
+
+            <!-- TOTAL -->
+            <div class="bg-white p-4 rounded shadow text-right">
+                <p>Total Dipilih:</p>
+                <p id="checkoutTotal" class="text-xl font-bold">Rp 0</p>
+            </div>
+
+            <!-- SHIPPING INFO -->
+            <div class="bg-white p-4 rounded shadow">
+
+                <h3 class="font-semibold mb-3">Alamat Pengiriman</h3>
+
+                <label>Nama</label>
+                <input type="text" name="name" required class="w-full p-2 border rounded mb-3">
+
+                <label>Nomor HP</label>
+                <input type="text"
+                       name="phone"
+                       required
+                       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                       class="w-full p-2 border rounded mb-3">
+
+                <label>Alamat</label>
+                <textarea name="address" required class="w-full p-2 border rounded mb-3"></textarea>
+
+                <label>Catatan</label>
+                <textarea name="notes" class="w-full p-2 border rounded mb-3"></textarea>
+
+                <button class="bg-green-600 text-white px-4 py-2 rounded float-right">
+                    Checkout Dipilih
+                </button>
 
             </div>
-        @endif
 
-    </div>
-    <script>
-    // Kurangi Qty
-    function cartMinus(id) {
-        let input = document.getElementById('qtyInput_' + id);
-        let current = parseInt(input.value || "1");
+        </div>
+    </form>
 
-        if (current > 1) {
-            input.value = current - 1;
-        }
+    @endif
+
+</div>
+
+<script>
+/* ==========================
+   HELPER FORMAT RUPIAH
+========================== */
+function formatRp(num){
+    return 'Rp ' + Number(num).toLocaleString('id-ID');
+}
+
+/* ==========================
+   HITUNG TOTAL
+========================== */
+function recalcTotal(){
+    let total = 0;
+
+    document.querySelectorAll('.selected-item:checked').forEach(cb => {
+        const card = cb.closest('.flex');
+        const price = Number(card.querySelector('.priceText').dataset.price);
+        const qty = Number(card.querySelector('.qtyInput').value);
+        total += price * qty;
+    });
+
+    document.getElementById('checkoutTotal').innerText = formatRp(total);
+}
+
+/* ==========================
+   UPDATE QTY VIA AJAX
+========================== */
+function ajaxQty(id, qty){
+    fetch(`/cart/item/${id}/ajax`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ quantity : qty })
+    }).then(res => res.json())
+    .then(() => recalcTotal());
+}
+
+/* MINUS */
+function qtyMinus(id){
+    let input = document.getElementById('qty_'+id);
+    let current = Number(input.value);
+    if(current > 1){
+        input.value = current - 1;
+        ajaxQty(id, current - 1);
     }
+}
 
-    // Tambah Qty
-    function cartPlus(id, stock) {
-        let input = document.getElementById('qtyInput_' + id);
-        let current = parseInt(input.value || "1");
-
-        if (current < stock) {
-            input.value = current + 1;
-        }
+/* PLUS */
+function qtyPlus(id, stock){
+    let input = document.getElementById('qty_'+id);
+    let current = Number(input.value);
+    if(current < stock){
+        input.value = current + 1;
+        ajaxQty(id, current + 1);
     }
+}
+
+/* MANUAL INPUT */
+function qtyManual(id){
+    let input = document.getElementById('qty_'+id);
+    let value = Number(input.value || 1);
+    ajaxQty(id, value);
+}
+
+/* DELETE ITEM (AJAX) */
+function deleteItem(id){
+    fetch(`/cart/item/${id}`,{
+        method: "DELETE",
+        headers:{
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        }
+    }).then(() => location.reload());
+}
 </script>
-
 
 </x-dashboard-layout>

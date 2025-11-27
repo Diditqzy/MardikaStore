@@ -1,6 +1,11 @@
 <x-public-layout>
 
     <div class="max-w-7xl mx-auto p-6">
+        @if(session('success'))
+            <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
@@ -98,6 +103,28 @@
                 {{ $product->description }}
             </p>
         </div>
+        <h3 class="text-xl font-bold mt-6 mb-3">Ulasan Pembeli</h3>
+
+        @forelse($product->reviews as $rev)
+            <div class="border p-4 rounded mb-3 bg-white">
+                <div class="flex items-center">
+                    <span class="text-yellow-500 text-lg">
+                        {{ str_repeat('★', $rev->rating) }}
+                        <span class="text-gray-400">
+                            {{ str_repeat('☆', 5 - $rev->rating) }}
+                        </span>
+                    </span>
+                </div>
+
+                <p class="mt-1 text-gray-700">{{ $rev->comment }}</p>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Oleh: {{ $rev->user->name }} • {{ $rev->created_at->format('d M Y') }}
+                </p>
+            </div>
+        @empty
+            <p class="text-gray-500">Belum ada ulasan.</p>
+        @endforelse
 
     </div>
 
