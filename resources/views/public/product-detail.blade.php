@@ -1,153 +1,203 @@
-<x-public-layout>
+<x-app-layout :title="$product->name">
 
-    <div class="max-w-7xl mx-auto p-6">
-        @if(session('success'))
-            <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-start mb-6">
+            <a href="{{ url('/') }}"
+               class="flex items-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 
+                      text-gray-700 font-medium rounded-xl shadow transition">
 
+                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali
+            </a>
+        </div>
+
+        {{-- WRAPPER --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-            <!-- PRODUCT IMAGE -->
-            <div class="bg-white rounded shadow p-4 flex items-center justify-center">
-                <img 
-                    src="{{ $product->image ? asset('storage/'.$product->image) : 'https://via.placeholder.com/600' }}"
-                    class="object-contain max-h-[500px] w-full"
-                >
+            {{-- ===========================
+                LEFT: PRODUCT IMAGE
+            ============================ --}}
+            <div class="bg-white border-2 border-red-600 shadow-gray-300 shadow-lg rounded-2xl p-6 flex items-center justify-center">
+                
+                <div class="w-[500px] h-[400px] bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+                    @if($product->image)
+                        <img src="{{ asset('storage/'.$product->image) }}" class="w-full h-full object-cover" />
+                    @else
+                        <img src="https://via.placeholder.com/500x400?text=Tidak+Ada+Gambar" class="w-full h-full object-cover" />
+                    @endif
+                </div>
+
             </div>
 
-            <!-- PRODUCT INFO -->
-            <div class="p-4">
-                <h1 class="text-3xl font-bold mb-3">{{ $product->name }}</h1>
+            {{-- ===========================
+                RIGHT: PRODUCT INFO
+            ============================ --}}
+            <div>
 
-                <p class="text-2xl text-blue-600 font-extrabold mb-3">
+                {{-- NAME --}}
+                <h1 class="text-3xl font-bold text-gray-800 mb-3">
+                    {{ $product->name }}
+                </h1>
+
+                {{-- PRICE --}}
+                <p class="text-3xl font-extrabold text-red-600 mb-4">
                     Rp {{ number_format($product->price, 0, ',', '.') }}
                 </p>
 
-                <p class="text-gray-700 mb-2">
-                    Stok: <span class="font-semibold">{{ $product->stock }}</span>
-                </p>
+                {{-- DETAIL INFORMASI --}}
+                <div class="space-y-4 mt-6">
 
-                <p class="text-gray-700 mb-4">
-                    Toko: 
-                    <span class="font-semibold text-green-700">
-                        {{ $product->store->name }}
-                    </span>
-                </p>
-
-                <!-- ADD TO CART FORM -->
-                <form action="{{ route('cart.store') }}" method="POST" class="mb-6">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-                    <!-- QTY -->
-                    <div class="mb-4">
-                        <label class="block text-sm mb-1">Jumlah</label>
-
-                        <div class="flex items-center gap-2">
-
-                            <!-- MINUS -->
-                            <button type="button"
-                                onclick="qtyMinus()"
-                                class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-xl font-bold">
-                                -
-                            </button>
-
-                            <!-- INPUT -->
-                            <input 
-                                type="text"
-                                name="quantity"
-                                id="qtyInput"
-                                value="1"
-                                class="w-16 p-2 border rounded text-center"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                onpaste="return false"
-                            >
-
-                            <!-- PLUS -->
-                            <button type="button"
-                                onclick="qtyPlus({{ $product->stock }})"
-                                class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded flex items-center justify-center text-xl font-bold">
-                                +
-                            </button>
-
-                        </div>
-
-                        <p class="text-sm text-gray-500 mt-1">Stok tersedia: {{ $product->stock }}</p>
+                    {{-- STORE --}}
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M3 7l9-4 9 4-9 4-9-4zm0 4l9 4 9-4m-9 4v6" />
+                        </svg>
+                        <p class="text-gray-700 text-lg">
+                            Toko: <span class="font-semibold">{{ $product->store->name }}</span>
+                        </p>
                     </div>
 
-                    <!-- BUTTON -->
-                    @guest
-                        <a href="{{ route('login') }}" 
-                           class="bg-blue-600 text-white px-6 py-3 rounded block text-center">
-                           Login untuk membeli
-                        </a>
-                    @else
-                        <button type="submit" 
-                            class="bg-green-600 text-white px-6 py-3 rounded w-full">
-                            Tambah ke Keranjang
-                        </button>
-                    @endguest
+                    {{-- STOCK --}}
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M3 3h18v4H3zm2 4v14h14V7" />
+                        </svg>
+                        <p class="text-gray-700 text-lg">
+                            Stok tersedia: <span class="font-semibold">{{ $product->stock }}</span>
+                        </p>
+                    </div>
 
-                </form>
+                    {{-- CATEGORY --}}
+                    <div class="flex items-center gap-3 mb-4">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <p class="text-gray-700 text-lg">
+                            Kategori: <span class="font-semibold">{{ $product->category->name ?? '-' }}</span>
+                        </p>
+                    </div>
+
+                </div>
+
+                {{-- ===========================
+                    CTA AREA
+                ============================ --}}
+
+                {{-- ========== UNTUK GUEST ========== --}}
+                @guest
+                    <a href="{{ route('register') }}"
+                       class="block w-full py-4 mt-4 text-center rounded-xl bg-red-600 text-white text-xl font-bold
+                              hover:bg-red-700 shadow-lg transition">
+                        Daftar untuk membeli
+                    </a>
+                @endguest
+
+
+                {{-- ========== UNTUK BUYER ========== --}}
+                @auth
+                    @if (auth()->user()->role === 'buyer')
+
+                        {{-- FAVORIT BUTTON --}}
+                        <form action="{{ route('buyer.wishlist.add', $product->id) }}" method="POST" class="mt-6">
+                            @csrf
+                            <button type="submit"
+                                class="flex items-center gap-2 px-4 py-3 border border-red-600 text-red-600 
+                                       rounded-xl hover:bg-red-600 hover:text-white transition">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M5 15l7 7 7-7M5 9l7-7 7 7" />
+                                </svg>
+                                Tambah ke Favorit
+                            </button>
+                        </form>
+
+                        {{-- ADD TO CART --}}
+                        <form action="{{ route('cart.store') }}" method="POST" class="mt-8">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                            {{-- QTY --}}
+                            <div class="flex items-center gap-4 mb-4">
+
+                                <button type="button"
+                                        onclick="qtyStep(-1)"
+                                        class="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-lg text-xl">
+                                    -
+                                </button>
+
+                                <input id="qtyInput"
+                                       type="number"
+                                       name="quantity"
+                                       min="1"
+                                       value="1"
+                                       class="w-16 text-center border rounded-lg py-2">
+
+                                <button type="button"
+                                        onclick="qtyStep(1)"
+                                        class="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-lg text-xl">
+                                    +
+                                </button>
+
+                            </div>
+
+                            {{-- BUTTON CART --}}
+                            <button type="submit"
+                                    class="w-full py-4 bg-red-600 text-white text-xl font-bold rounded-xl 
+                                           hover:bg-red-700 transition shadow-lg">
+                                Tambah ke Keranjang
+                            </button>
+                        </form>
+
+                        {{-- ALERT --}}
+                        @if(session('success'))
+                            <div class="mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        {{-- QTY JS --}}
+                        <script>
+                            function qtyStep(step) {
+                                const input = document.getElementById('qtyInput');
+                                let value = parseInt(input.value) + step;
+                                if (value < 1) value = 1;
+                                input.value = value;
+                            }
+                        </script>
+
+                    @endif
+                @endauth
+
 
             </div>
 
-        </div>
+        </div> {{-- END GRID --}}
 
-        <!-- DESCRIPTION -->
-        <div class="mt-10 bg-white p-6 rounded shadow">
-            <h2 class="text-xl font-bold mb-3">Deskripsi Produk</h2>
+        {{-- DESCRIPTION --}}
+        <div class="mt-16 bg-white shadow-md p-8 rounded-2xl">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Deskripsi Produk</h2>
             <p class="text-gray-700 leading-relaxed">
                 {{ $product->description }}
             </p>
         </div>
-        <h3 class="text-xl font-bold mt-6 mb-3">Ulasan Pembeli</h3>
 
-        @forelse($product->reviews as $rev)
-            <div class="border p-4 rounded mb-3 bg-white">
-                <div class="flex items-center">
-                    <span class="text-yellow-500 text-lg">
-                        {{ str_repeat('★', $rev->rating) }}
-                        <span class="text-gray-400">
-                            {{ str_repeat('☆', 5 - $rev->rating) }}
-                        </span>
-                    </span>
-                </div>
+        {{-- REVIEWS --}}
+        <div class="mt-10 bg-white shadow-md p-8 rounded-2xl">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Ulasan Pembeli</h2>
 
-                <p class="mt-1 text-gray-700">{{ $rev->comment }}</p>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Oleh: {{ $rev->user->name }} • {{ $rev->created_at->format('d M Y') }}
-                </p>
-            </div>
-        @empty
-            <p class="text-gray-500">Belum ada ulasan.</p>
-        @endforelse
+            <p class="text-gray-500">Belum ada ulasan untuk produk ini.</p>
+        </div>
 
     </div>
 
-
-    <!-- JS UNTUK QTY -->
-    <script>
-        function qtyMinus() {
-            let input = document.getElementById('qtyInput');
-            let value = parseInt(input.value || "1");
-
-            if (value > 1) {
-                input.value = value - 1;
-            }
-        }
-
-        function qtyPlus(stock) {
-            let input = document.getElementById('qtyInput');
-            let value = parseInt(input.value || "1");
-
-            if (value < stock) {
-                input.value = value + 1;
-            }
-        }
-    </script>
-
-</x-public-layout>
+</x-app-layout>

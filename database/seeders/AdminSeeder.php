@@ -14,10 +14,11 @@ class AdminSeeder extends Seeder
     {
         \App\Models\User::create([
             'name' => 'AdminMardika',
-            'email' => 'MardikaStore27gmail.com',
+            'email' => 'MardikaStore27@gmail.com',
             'password' => bcrypt('MardikaStore27'),
             'role' => 'admin',
             'status' => 'approved',
         ]);
+        
     }
 }

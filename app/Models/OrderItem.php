@@ -27,4 +27,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
+    public function review()
+    {
+        return $this->hasOne(Review::class, 'product_id', 'product_id')
+                    ->where('user_id', auth()->id());
+    }
 }

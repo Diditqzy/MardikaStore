@@ -75,6 +75,14 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
+        $cartItem->quantity = $request->quantity;
+        $cartItem->save();
+
+        return response()->json([
+            'success' => true,
+            'item_total' => $cartItem->price * $cartItem->quantity
+        ]);
+
         $cart = Cart::where('user_id', Auth::id())->firstOrFail();
 
         if ($cartItem->cart_id !== $cart->id) {

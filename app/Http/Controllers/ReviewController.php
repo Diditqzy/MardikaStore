@@ -3,41 +3,62 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Review;
+use App\Models\OrderItem;
 
 class ReviewController extends Controller
 {
-    public function store(Request $request, OrderItem $orderItem)
+    // FORM — HALAMAN REVIEW
+    public function form($itemId)
     {
-        // pastikan buyer memang pemilik order
-        if ($orderItem->order->user_id !== Auth::id()) {
-            abort(403);
+        $item = OrderItem::findOrFail($itemId);
+
+        // CEK APAKAH SUDAH ADA REVIEW
+        $existingReview = Review::where('order_item_id', $item->id)
+                                ->where('user_id', auth()->id())
+                                ->first();
+
+        if ($existingReview) {
+            return redirect()
+                ->back()
+                ->with('success', 'Anda sudah pernah memberi review untuk produk ini.');
         }
 
-        // hanya bisa review bila order COMPLETED
-        if ($orderItem->order->status !== 'completed') {
-            return back()->withErrors(['msg' => 'Review hanya bisa setelah pesanan selesai.']);
-        }
+        return view('buyer.orders.review', compact('item'));
+    }
 
-        // validasi
+
+    // SIMPAN REVIEW
+    public function store(Request $request, $itemId)
+    {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:500'
+            'comment' => 'required|string',
         ]);
 
-        // cegah review duplikat
-        if ($orderItem->review) {
-            return back()->withErrors(['msg' => 'Anda sudah me-review produk ini.']);
+        $item = OrderItem::findOrFail($itemId);
+
+        // CEK DOUBLE REVIEW
+        $exists = Review::where('order_item_id', $item->id)
+                        ->where('user_id', auth()->id())
+                        ->exists();
+
+        if ($exists) {
+            return back()->with('success', 'Review anda sudah tercatat sebelumnya.');
         }
 
-        ProductReview::create([
-            'order_id'      => $orderItem->order_id,
-            'order_item_id' => $orderItem->id,
-            'product_id'    => $orderItem->product_id,
-            'user_id'       => Auth::id(),
+        Review::create([
+            'user_id'       => auth()->id(),
+            'product_id'    => $item->product_id,
+            'order_id'      => $item->order_id,
+            'order_item_id' => $item->id,
             'rating'        => $request->rating,
             'comment'       => $request->comment,
         ]);
 
-        return back()->with('success', 'Review berhasil dikirim.');
+        return redirect()
+        ->route('product.detail', $item->product_id)
+        ->with('success', 'Review anda telah tercatat.');
+                
     }
 }

@@ -1,61 +1,81 @@
-<x-dashboard-layout title="Keranjang Belanja">
+<x-app-layout title="Keranjang Belanja">
 
-<div class="max-w-4xl mx-auto p-6">
+    {{-- STRIP MERAH ATAS --}}
+    <div class="w-full h-24 bg-red-600"></div>
 
-    <h1 class="text-2xl font-bold mb-4">Keranjang Belanja</h1>
+    {{-- WRAPPER PUTIH UTAMA --}}
+    <div class="max-w-5xl mx-auto -mt-12 bg-white rounded-2xl shadow p-6 mb-16">
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
-    @endif
+        {{-- HEADER --}}
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Keranjang Belanja</h1>
 
-    @if ($cart->items->isEmpty())
-        <p class="text-gray-600">Keranjang Anda kosong.</p>
-    @else
+            <a href="{{ route('buyer.dashboard') }}"
+               class="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 transition">
+                Kembali
+            </a>
+        </div>
 
-    <!-- ============================= -->
-    <!-- FORM CHECKOUT (POST SAJA)    -->
-    <!-- ============================= -->
-    <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
-        @csrf
+        @if(session('success'))
+            <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
+        @endif
 
-        <div class="space-y-4">
+        {{-- KERANJANG KOSONG --}}
+        @if ($cart->items->isEmpty())
+            <div class="text-center py-20 bg-white rounded-2xl shadow">
+                <p class="text-xl font-semibold text-gray-700 mb-2">Keranjang Anda kosong.</p>
+                <p class="text-gray-500 mb-6">Tambahkan produk ke keranjang untuk mulai belanja.</p>
 
-            @foreach ($cart->items as $item)
-                <div class="flex gap-4 items-center bg-white p-4 rounded shadow relative">
+                <a href="{{ route('buyer.dashboard') }}"
+                   class="inline-block bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition">
+                    Kembali Belanja
+                </a>
+            </div>
+        @else
 
-                    <!-- CHECKBOX -->
+        {{-- FORM CHECKOUT --}}
+        <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
+            @csrf
+
+            <div class="space-y-5">
+
+                {{-- ITEM LIST --}}
+                @foreach ($cart->items as $item)
+                <div class="flex gap-4 items-center bg-gray-50 p-4 rounded-2xl shadow relative hover:bg-red-50 transition">
+
+                    {{-- CHECKBOX --}}
                     <input type="checkbox"
                            name="selected_items[]"
                            value="{{ $item->id }}"
-                           class="selected-item"
+                           class="selected-item w-5 h-5 accent-red-600"
                            onchange="recalcTotal()">
 
-                    <!-- IMAGE -->
-                    <div class="w-20 h-20 overflow-hidden flex justify-center items-center">
+                    {{-- IMAGE --}}
+                    <div class="w-24 h-24 bg-white rounded-xl shadow flex justify-center items-center overflow-hidden">
                         <img src="{{ asset('storage/'.$item->product->image) }}" class="object-contain h-full">
                     </div>
 
-                    <!-- PRODUCT INFO -->
+                    {{-- INFO --}}
                     <div class="flex-1">
-                        <h3 class="font-semibold">{{ $item->product->name }}</h3>
+                        <h3 class="font-semibold text-lg">{{ $item->product->name }}</h3>
 
-                        <p class="text-blue-600 font-bold priceText"
+                        <p class="text-red-600 font-bold text-lg priceText"
                            data-price="{{ $item->price }}">
                             Rp {{ number_format($item->price,0,',','.') }}
                         </p>
 
-                        <!-- QTY AJAX -->
+                        {{-- QTY --}}
                         <div class="flex items-center gap-2 mt-2">
 
                             <button type="button"
                                     onclick="qtyMinus({{ $item->id }})"
-                                    class="w-7 h-7 bg-gray-200 rounded">
+                                    class="w-8 h-8 bg-gray-200 rounded-lg hover:bg-gray-300">
                                 -
                             </button>
 
                             <input type="text"
                                    id="qty_{{ $item->id }}"
-                                   class="qtyInput w-12 text-center border rounded"
+                                   class="qtyInput w-12 text-center border rounded-lg"
                                    value="{{ $item->quantity }}"
                                    data-id="{{ $item->id }}"
                                    data-stock="{{ $item->product->stock }}"
@@ -63,73 +83,71 @@
 
                             <button type="button"
                                     onclick="qtyPlus({{ $item->id }}, {{ $item->product->stock }})"
-                                    class="w-7 h-7 bg-gray-200 rounded">
+                                    class="w-8 h-8 bg-gray-200 rounded-lg hover:bg-gray-300">
                                 +
                             </button>
+
                         </div>
                     </div>
 
-                    <!-- DELETE BUTTON (OUTSIDE FORM CHECKOUT!!!) -->
+                    {{-- DELETE --}}
                     <button type="button"
-                            class="absolute top-2 right-2 text-red-600"
+                            class="absolute top-3 right-3 text-red-600 hover:text-red-800"
                             onclick="deleteItem({{ $item->id }})">
                         Hapus
                     </button>
 
                 </div>
-            @endforeach
+                @endforeach
 
-            <!-- TOTAL -->
-            <div class="bg-white p-4 rounded shadow text-right">
-                <p>Total Dipilih:</p>
-                <p id="checkoutTotal" class="text-xl font-bold">Rp 0</p>
+                {{-- TOTAL --}}
+                <div class="bg-white p-4 rounded-2xl shadow text-right">
+                    <p class="text-gray-600">Total Dipilih:</p>
+                    <p id="checkoutTotal" class="text-2xl font-bold text-red-600">Rp 0</p>
+                </div>
+
+                {{-- ALAMAT PENGIRIMAN --}}
+                <div class="bg-white p-6 rounded-2xl shadow">
+
+                    <h3 class="text-xl font-semibold mb-4">Alamat Pengiriman</h3>
+
+                    <label class="font-semibold">Nama</label>
+                    <input type="text" name="name" required class="w-full p-3 border rounded-xl mb-4">
+
+                    <label class="font-semibold">Nomor HP</label>
+                    <input type="text"
+                           name="phone"
+                           required
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                           class="w-full p-3 border rounded-xl mb-4">
+
+                    <label class="font-semibold">Alamat Lengkap</label>
+                    <textarea name="address" required class="w-full p-3 border rounded-xl mb-4"></textarea>
+
+                    <label class="font-semibold">Catatan</label>
+                    <textarea name="notes" class="w-full p-3 border rounded-xl mb-6"></textarea>
+
+                    <button class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 float-right">
+                        Checkout Dipilih
+                    </button>
+
+                </div>
+
             </div>
 
-            <!-- SHIPPING INFO -->
-            <div class="bg-white p-4 rounded shadow">
+        </form>
 
-                <h3 class="font-semibold mb-3">Alamat Pengiriman</h3>
+        @endif
 
-                <label>Nama</label>
-                <input type="text" name="name" required class="w-full p-2 border rounded mb-3">
+    </div>
 
-                <label>Nomor HP</label>
-                <input type="text"
-                       name="phone"
-                       required
-                       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-                       class="w-full p-2 border rounded mb-3">
 
-                <label>Alamat</label>
-                <textarea name="address" required class="w-full p-2 border rounded mb-3"></textarea>
-
-                <label>Catatan</label>
-                <textarea name="notes" class="w-full p-2 border rounded mb-3"></textarea>
-
-                <button class="bg-green-600 text-white px-4 py-2 rounded float-right">
-                    Checkout Dipilih
-                </button>
-
-            </div>
-
-        </div>
-    </form>
-
-    @endif
-
-</div>
-
+{{-- JAVASCRIPT LOGIC --}}
 <script>
-/* ==========================
-   HELPER FORMAT RUPIAH
-========================== */
 function formatRp(num){
     return 'Rp ' + Number(num).toLocaleString('id-ID');
 }
 
-/* ==========================
-   HITUNG TOTAL
-========================== */
 function recalcTotal(){
     let total = 0;
 
@@ -143,9 +161,6 @@ function recalcTotal(){
     document.getElementById('checkoutTotal').innerText = formatRp(total);
 }
 
-/* ==========================
-   UPDATE QTY VIA AJAX
-========================== */
 function ajaxQty(id, qty){
     fetch(`/cart/item/${id}/ajax`, {
         method: "PATCH",
@@ -158,7 +173,6 @@ function ajaxQty(id, qty){
     .then(() => recalcTotal());
 }
 
-/* MINUS */
 function qtyMinus(id){
     let input = document.getElementById('qty_'+id);
     let current = Number(input.value);
@@ -168,7 +182,6 @@ function qtyMinus(id){
     }
 }
 
-/* PLUS */
 function qtyPlus(id, stock){
     let input = document.getElementById('qty_'+id);
     let current = Number(input.value);
@@ -178,14 +191,12 @@ function qtyPlus(id, stock){
     }
 }
 
-/* MANUAL INPUT */
 function qtyManual(id){
     let input = document.getElementById('qty_'+id);
-    let value = Number(input.value || 1);
-    ajaxQty(id, value);
+    let val = Number(input.value || 1);
+    ajaxQty(id, val);
 }
 
-/* DELETE ITEM (AJAX) */
 function deleteItem(id){
     fetch(`/cart/item/${id}`,{
         method: "DELETE",
@@ -196,4 +207,4 @@ function deleteItem(id){
 }
 </script>
 
-</x-dashboard-layout>
+</x-app-layout>

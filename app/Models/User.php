@@ -38,7 +38,7 @@ class User extends Authenticatable
     /**
      * Get the attributes that should be cast.
      *
-     * @return array<string, string>
+     * @return array<string, sztring>
      */
     protected function casts(): array
     {
@@ -50,5 +50,11 @@ class User extends Authenticatable
     public function store()
     {
         return $this->hasOne(Store::class);
+        return $this->hasOne(\App\Models\Store::class, 'user_id');
+       
     }
+    public function wishlist()
+{
+    return $this->hasMany(\App\Models\Wishlist::class, 'user_id');
+}
 }

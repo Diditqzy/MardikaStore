@@ -31,10 +31,14 @@ class RegisteredUserController extends Controller
     {
         
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class,
-            'password' => 'required|string|confirmed|min:8',
-            'role' => 'required|in:buyer,seller',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'role' => ['required', 'in:buyer,seller'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.unique' => 'Email telah terdaftar.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'required' => 'Silahkan lengkapi data anda.',
         ]);
 
         $role = $request->role ?? 'buyer';
@@ -55,8 +59,9 @@ class RegisteredUserController extends Controller
         
 
         // return redirect($this->redirectByRole());
-        return redirect()->route('login')
-        ->with('success', 'Registration successful! Please login.');
+        return redirect()
+        ->route('register')
+        ->with('success', 'Akun berhasil dibuat, silahkan login.');
     }
 
     private function redirectByRole()

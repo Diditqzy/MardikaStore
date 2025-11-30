@@ -44,13 +44,13 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
-    private function redirectByRole()
-    {
-        $user = auth()->user();
+private function redirectByRole()
+{
+    $user = auth()->user();
 
-        if ($user->role === 'admin') {
-            return route('admin.dashboard');
-        }
+    if ($user->role === 'admin') {
+        return route('admin.dashboard');
+    }
 
     if ($user->role === 'seller') {
 
@@ -62,11 +62,10 @@ class AuthenticatedSessionController extends Controller
             return route('seller.rejected');
         }
 
-        if ($user->status === 'approved') {
-            return route('seller.dashboard');
-        }
+        // SELLER APPROVED MASUK KE DASHBOARD
+        return route('seller.dashboard');
     }
 
-        return route('buyer.dashboard');
-    }
+    return route('buyer.dashboard');
+}
 }

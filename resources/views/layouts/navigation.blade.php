@@ -7,54 +7,91 @@
     };
 @endphp
 
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+<nav class="bg-white shadow-md border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ $dashboardUrl }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
+
+        <div class="flex justify-between items-center h-20">
+
+            {{-- LEFT: BRAND --}}
+            <div class="flex items-center gap-3">
+                <div class="bg-red-600 p-2 rounded-xl">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <circle cx="9" cy="20" r="1" />
+                        <circle cx="16" cy="20" r="1" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 4h2l3 12h10l3-8H6" />
+                    </svg>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="$dashboardUrl" :active="request()->url() === $dashboardUrl">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+                <a href="/" class="text-2xl tracking-wide font-extrabold text-gray-800">
+                    Mardika<span class="text-red-600">Store</span>
+                </a>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                            <div>{{ Auth::user()->name }}</div>
 
-                            <div class="ml-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
+            {{-- RIGHT: USER MENU --}}
+            <div class="flex items-center gap-6">
 
-                    <x-slot name="content">
-                        <!-- Authentication -->
+                {{-- NOTIFICATION ICON (Optional future use) --}}
+
+
+
+                {{-- USER DROPDOWN --}}
+                <div x-data="{ open: false }" class="relative">
+
+                    {{-- BUTTON --}}
+                    <button @click="open = !open"
+                        class="flex items-center gap-3 hover:bg-gray-100 px-4 py-2 rounded-xl transition">
+
+                        <div class="w-10 h-10 bg-red-100 border border-red-300 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 7l4 4 5-7 5 7 4-4v11H3V7z" />
+                        </svg>
+                        </div>
+
+                        <span class="font-semibold text-gray-800 hidden sm:block">
+                            {{ Auth::user()->name }}
+                        </span>
+
+                        <svg class="w-5 h-5 text-gray-600 transform"
+                            :class="open ? 'rotate-180' : ''"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+
+                    {{-- DROPDOWN MENU --}}
+                    <div x-show="open" @click.outside="open = false"
+                        x-transition
+                        class="absolute right-0 mt-3 w-52 bg-white shadow-lg border rounded-xl overflow-hidden z-50">
+
+                        <div class="px-4 py-3 border-b">
+                            <p class="text-sm text-gray-500">Masuk sebagai</p>
+                            <p class="font-semibold text-gray-700">{{ Auth::user()->name }}</p>
+                        </div>
+
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                            this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
+
+                            <button class="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 4H8a2 2 0 00-2 2v12a2 2 0 002 2h4m4-8H9m7-4l3 4-3 4" />
+                                </svg>
+                                Logout
+                            </button>
                         </form>
-                    </x-slot>
-                </x-dropdown>
+
+                    </div>
+                </div>
+
             </div>
+
         </div>
     </div>
 </nav>

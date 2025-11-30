@@ -94,7 +94,7 @@ class CheckoutController extends Controller
                 $ci->delete();
             }
 
-            return redirect()->route('order.success', $order->id);
+            return redirect()->route('buyer.order.success', $order->id);
         });
     }
 }

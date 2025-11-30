@@ -6,28 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('product_reviews', function (Blueprint $table) {
+
             $table->id();
-            $table->unsignedBigInteger('order_id');     // order tertentu
-            $table->unsignedBigInteger('order_item_id');// item tertentu
-            $table->unsignedBigInteger('product_id');   // produknya
-            $table->unsignedBigInteger('user_id');      // buyer
-            $table->tinyInteger('rating');              // 1–5
-            $table->text('comment')->nullable();
+
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('order_item_id');
+
+            $table->integer('rating');  // 1 - 5
+            $table->text('comment');
+
             $table->timestamps();
 
-            $table->unique(['order_item_id', 'user_id']); // hanya 1 review per item
+            // RELASI
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('order_item_id')->references('id')->on('order_items')->onDelete('cascade');
+
+            // UNIQUE agar 1 user hanya bisa review 1x per item
+            $table->unique(['order_item_id', 'user_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('product_reviews');

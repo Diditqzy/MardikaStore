@@ -28,7 +28,7 @@ class UserManagementController extends Controller
         $user->status = 'approved';
         $user->save();
 
-        return back()->with('success', 'Seller Approved');
+        return back()->with('success', 'Penjual berhasil disetujui');
     }
 
     public function reject($id)
@@ -37,6 +37,56 @@ class UserManagementController extends Controller
         $user->status = 'rejected';
         $user->save();
 
-        return back()->with('success', 'Seller Rejected');
+        return back()->with('success', 'Penjual ditolak');
+    }
+    // Halaman edit user
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+
+        return view('admin.users.edit', compact('user'));
+    }
+
+    // Update user
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'nullable|min:6|confirmed',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        // update password jika diisi
+        if ($request->password) {
+            $user->password = bcrypt($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.users.index')
+                         ->with('success', 'Pengguna berhasil diperbarui.');
+    }
+
+    // Delete user
+    public function destroy($id)
+    {
+        User::findOrFail($id)->delete();
+
+        return redirect()->route('admin.users.index')
+                         ->with('success', 'Pengguna berhasil dihapus.');
+    }
+    public function approvedSellers()
+    {
+        $sellers = User::where('role', 'seller')
+                        ->where('status', 'approved')
+                        ->with('store')
+                        ->get();
+
+        return view('admin.users.sellers_list', compact('sellers'));
     }
 }

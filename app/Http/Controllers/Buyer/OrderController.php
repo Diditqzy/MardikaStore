@@ -26,6 +26,17 @@ class OrderController extends Controller
         $order->load('items.product.store');
         return view('buyer.orders.show', compact('order'));
     }
+    public function details(Order $order)
+    {
+        
+
+        $order->load('items.product');
+
+        return view('buyer.orders.orders.detail', [
+            'order' => $order,
+            'items' => $order->items
+        ]);
+    }
 
     // buyer cancel (only pending)
     public function cancel(Order $order)

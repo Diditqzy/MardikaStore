@@ -9,20 +9,34 @@ use App\Models\Category;
 
 class BuyerDashboardController extends Controller
 {
-    public function index(Request $request)
-    {
-        $categories = Category::all();
+public function index(Request $request)
+{
+    $categories = Category::all();
 
-        $products = Product::with(['store'])
-            ->when($request->search, function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            })
-            ->when($request->category_id, function ($q) use ($request) {
-                $q->where('category_id', $request->category_id);
-            })
-            ->latest()
-            ->paginate(9);
+    $query = Product::with(['store','category']);
 
-        return view('buyer.dashboard', compact('products', 'categories'));
+    if ($request->search) {
+        $query->where('name', 'like', '%' . $request->search . '%');
     }
+
+    if ($request->category_id) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    // AMBIL SEMUA PRODUK TANPA BATAS
+    $products = $query->latest()->get();
+
+    $selectedCategory = $request->category_id ? Category::find($request->category_id) : null;
+
+    // cek kategori ada produk atau tidak
+    $categoryHasAnyProducts = false;
+    if ($selectedCategory) {
+        $categoryHasAnyProducts =
+            Product::where('category_id', $selectedCategory->id)->exists();
+    }
+
+    return view('buyer.dashboard', compact('products', 'categories', 'selectedCategory', 'categoryHasAnyProducts'));
+}
+
+
 }

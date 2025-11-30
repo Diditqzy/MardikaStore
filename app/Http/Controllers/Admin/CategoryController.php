@@ -28,7 +28,7 @@ class CategoryController extends Controller
 
         Category::create($request->only('name', 'description'));
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category created.');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dibuat.');
     }
 
     public function edit(Category $category)
@@ -45,13 +45,15 @@ class CategoryController extends Controller
 
         $category->update($request->only('name', 'description'));
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated.');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category deleted.');
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Kategori berhasil dihapus beserta produknya.');
     }    
 }

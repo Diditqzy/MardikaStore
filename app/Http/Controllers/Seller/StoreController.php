@@ -42,7 +42,9 @@ class StoreController extends Controller
 
             $store->save();
         }
-
-        return redirect()->route('seller.store')->with('success', 'Store updated.');
+        return redirect()
+        ->back()
+        ->with('success', 'Toko berhasil diperbarui. Silahkan kembali ke dashboard.');
+        // return redirect()->route('seller.store')->with('success', 'Store updated.');
     }
 }

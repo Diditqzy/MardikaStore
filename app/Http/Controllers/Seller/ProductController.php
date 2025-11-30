@@ -58,7 +58,7 @@ class ProductController extends Controller
         ]);
 
         return redirect()->route('seller.products.index')
-            ->with('success', 'Product created.');
+            ->with('success', 'Produk berhasil ditambahkan.');
     }
 
     public function edit(Product $product)
@@ -95,12 +95,12 @@ class ProductController extends Controller
         
 
         return redirect()->route('seller.products.index')
-            ->with('success', 'Product updated.');
+            ->with('success', 'Produk diperbarui.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('seller.products.index')->with('success', 'Product deleted.');
+        return redirect()->route('seller.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }
