@@ -1,59 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🛍️ MardikaStore — Platform E-Commerce Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+MardikaStore adalah platform e-commerce modern berbasis **Laravel**, dirancang untuk menghubungkan **Buyer**, **Seller**, dan **Admin** dalam satu ekosistem transaksi yang aman, nyaman, dan terstruktur.
 
-## About Laravel
+Nama **“Mardika”** berasal dari akar kata **“Merdeka”** dalam bahasa Sanssekerta yang berarti **bebas, mandiri, dan berdaya**. Filosofi ini sejalan dengan tujuan platform untuk memberikan kebebasan dan kemandirian kepada penjual dan pembeli.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur Utama
+- 🔐 **Role-based Access (Admin, Seller, Buyer)**
+- 🛒 **Sistem Keranjang**
+- ❤️ **Wishlist**
+- ⭐ **Review Produk**
+- 🛍️ **Manajemen Toko & Produk**
+- 📦 **Order & Checkout Sistem**
+- 📊 **Dashboard sesuai per Role**
+- 🗂️ **Kategori Produk**
+- 👤 **Autentikasi Laravel Breeze**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🧩 Arsitektur Role dalam Sistem
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 👑 **Admin**
+Fitur:
+- 👥 Manajemen user  
+- 🏷️ CRUD kategori  
+- 🛍️ Monitoring seluruh produk  
+- 🏪 Pengelolaan toko  
+- 📊 Verifikasi seller  
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+### 🛒 **Buyer**
+Fitur:
+- 🔎 Browse produk & kategori  
+- ❤️ Wishlist  
+- 🛒 Keranjang belanja  
+- 💳 Checkout  
+- 📦 Track pesanan  
+- ⭐ Beri review pada produk yang sudah diterima  
+- 🧾 Riwayat pesanan  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+### 🛍️ **Seller**
+Fitur:
+- 🏪 Kelola toko  
+- 📦 Kelola produk (CRUD)  
+- 🚚 Kelola pesanan masuk  
+- 📊 Kelola pengguna
+- 📲 Kelola status pemesanan  
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🛠️ Teknologi yang Digunakan
+- **Laravel 12**
+- **Blade + TailwindCSS**
+- **MySQL**
+- **Xampp**
+- **Laravel Breeze**
+- **Eloquent ORM**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 📘 Filosofi Sistem
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Sejalan dengan makna **Mardika**, sistem ini dibangun untuk:
 
-## Security Vulnerabilities
+- Memberikan **kemandirian** bagi seller untuk berbisnis  
+- Memberikan **kebebasan** bagi buyer untuk memilih produk  
+- Menjaga **kepercayaan** melalui sistem review & tracking pesanan  
+- Menjadi fondasi marketplace modern yang bisa terus berkembang
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+--
 
-## License
+# 🔄 Flow Alur Marketplace MardikaStore
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Dokumen ini menjelaskan alur lengkap bagaimana Marketplace MardikaStore bekerja mulai dari **Guest**, **Buyer**, **Seller**, hingga **Admin**. Penjelasan alur dibuat ringkas namun terstruktur agar mudah dipahami oleh developer maupun stakeholder.
+
+---
+
+## 🧭 1. Alur User & Autentikasi
+
+### **Guest**
+👤 Guest
+↓
+🔍 Melihat produk
+↓
+🚫 Tidak bisa checkout / wishlist / review
+↓
+📝 Diminta login atau register
+
+### **Buyer**
+🧑‍💼 Buyer Login
+↓
+🏠 Masuk ke Buyer Dashboard
+↓
+🔍 Cari Produk → Tambah ke Keranjang / Wishlist
+↓
+🛒 Checkout
+↓
+📦 Pesanan dibuat (status: pending)
+↓
+🚚 Seller memproses pesanan
+↓
+📬 Pesanan selesai (completed)
+↓
+⭐ Buyer bisa beri review produk
+
+### **Admin**
+👑 Admin Login
+↓
+📊 Dashboard Admin
+↓
+🧑‍💼 Kelola User & Seller Verification
+↓
+🏪 Kelola Toko
+↓
+🏷️ Kelola Kategori Produk
+↓
+🛍️ Monitoring Produk & Marketplace
+
+## 📌 Pembuat
+**MardikaStore**  
+🥷 Sosok asli dibalik pembuatan **MardikaStore** yaitu: **Ditqzy** 🚀
