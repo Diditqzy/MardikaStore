@@ -7,7 +7,7 @@ Nama **“Mardika”** berasal dari akar kata **“Merdeka”** dalam bahasa San
 ---
 
 ## ✨ Fitur Utama
-- 🔐 **Role-based Access (Admin, Seller, Buyer)**
+- 🔐 **Role  (Admin, Seller, Buyer)**
 - 🛒 **Sistem Keranjang**
 - ❤️ **Wishlist**
 - ⭐ **Review Produk**
